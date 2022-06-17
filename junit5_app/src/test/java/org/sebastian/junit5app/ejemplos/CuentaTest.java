@@ -12,9 +12,11 @@ import org.sebastian.junit5app.ejemplos.models.Banco;
 import org.sebastian.junit5app.ejemplos.models.Cuenta;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.*;
@@ -713,4 +715,37 @@ class CuentaTest {
      *
      */
 
+    /**
+     * @TimeOut
+     * Da un limite de tiempo eje (5) segundos, si se
+     * pasa arroja una exception
+     *
+     * Primer parametro limite de tiempo
+     * Como segundo parametro se puede indicar la medida del tiempo
+     */
+
+
+    @Tag("timeout")
+    @Test
+    @Timeout(5)
+    void pruebaTimeOutTest() throws InterruptedException {
+        TimeUnit.SECONDS.sleep(1);
+    }
+
+
+    @Tag("timeout")
+    @Test
+    @Timeout(value = 1000, unit = TimeUnit.MILLISECONDS)
+    void pruebaTimeOutTest2() throws InterruptedException {
+        TimeUnit.MILLISECONDS.sleep(100);
+    }
+
+    @Test
+    @Tag("timeout")
+    void pruebaTimeOutWithAssertions() {
+        assertTimeout(Duration.ofSeconds(5), () -> {
+            //Nuestro Test
+            TimeUnit.MILLISECONDS.sleep(4000);
+        });
+    }
 }

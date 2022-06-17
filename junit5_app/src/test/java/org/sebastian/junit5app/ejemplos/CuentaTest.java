@@ -120,7 +120,7 @@ class CuentaTest {
         System.out.println("Finalizando el test, despues de que se ejecute todos los test");
     }
 
-
+    @Tag("cuenta")
     @Nested
     @DisplayName("Probando atributos de la cuente corriente")
     class CuentaTestNombreSaldo {
@@ -173,6 +173,7 @@ class CuentaTest {
             TODO: TDD = Test Driven Development
             Primero se crear los test y luego el codigo
         */
+        @Tag("cuenta")
         @Test
         void testDebitoCuenta() {
             cuenta.debito(new BigDecimal(100));
@@ -182,6 +183,7 @@ class CuentaTest {
             assertEquals("900.12345", cuenta.getSaldo().toPlainString(), () -> "Esperado debe ser igual al actual");
         }
 
+        @Tag("cuenta")
         @Test
         void testCreditoCuenta() {
             cuenta.credito(new BigDecimal(100));
@@ -190,6 +192,8 @@ class CuentaTest {
             assertEquals("1100.12345", cuenta.getSaldo().toPlainString());
         }
 
+        @Tag("cuenta")
+        @Tag("banco")
         @Test
         void testTransferirDineroCuentas() {
             Cuenta cuenta1 = new Cuenta("Jhon Doe", new BigDecimal("2500"));
@@ -204,7 +208,8 @@ class CuentaTest {
         }
     }
 
-
+    @Tag("cuenta")
+    @Tag("error")
     @Test
     void testDineroInsuficienteException() {
         //Primer argumento => exception a lanzar, Segundo argumento metodo donde ocurre la expepction, con lambda
@@ -226,6 +231,8 @@ class CuentaTest {
         o no, todoo eso con expresiones lamda aniadadas separados por coma
      */
 
+    @Tag("cuenta")
+    @Tag("banco")
     @Test
     //@Disabled
     @DisplayName("Probando relaciones entre las cuentas y el banco con assertAll.")
@@ -548,6 +555,7 @@ class CuentaTest {
         assertEquals("900.12345", cuenta.getSaldo().toPlainString(), () -> "Esperado debe ser igual al actual");
     }
 
+    @Nested
     class PruebasParametrizadasTest{
 
         /*
@@ -574,7 +582,7 @@ class CuentaTest {
         Donde argumentsWithNames = {0} -> El cual refleja el valor contenido en esa posicion
 
      */
-
+        @Tag("param")
         @ParameterizedTest(name = "numero {index} ejecutando con valor {0} -> {argumentsWithNames}")
         @DisplayName(value = "Pasando parametros por argumento")
         @ValueSource(strings = {"100", "200", "300", "500", "700", "1000"})
@@ -584,7 +592,7 @@ class CuentaTest {
             assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
         }
 
-
+        @Tag("param")
         @ParameterizedTest(name = "numero {index} ejecutando con valor {0} -> {argumentsWithNames}")
         @DisplayName(value = "Pasando parametros por argumento con CSV")
         @CsvSource(value = {"1,100", "2,200", "3,300", "4,500", "5,700", "6,1000"})
@@ -595,7 +603,7 @@ class CuentaTest {
             assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
         }
 
-
+        @Tag("param")
         @ParameterizedTest(name = "numero {index} ejecutando con valor {0} -> {argumentsWithNames}")
         @DisplayName(value = "Pasando parametros por argumento con CSV File")
         @CsvFileSource(resources = "/data.csv")
@@ -606,17 +614,7 @@ class CuentaTest {
         }
 
 
-        // Se llama a un metodo que tenga una lista con estos valores
-        @ParameterizedTest(name = "numero {index} ejecutando con valor {0} -> {argumentsWithNames}")
-        @DisplayName(value = "Pasando parametros por argumento con MethodSource")
-        @MethodSource(value = {"montoList"})
-        void testDebitoCuentaMethodSource(String monto) {
-            cuenta.debito(new BigDecimal(monto));
-            assertNotNull(cuenta.getSaldo(), "¡La Cuenta no puede ser nula!");
-            assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
-        }
-
-
+        @Tag("param")
         @ParameterizedTest(name = "numero {index} ejecutando con valor {0} -> {argumentsWithNames}")
         @DisplayName(value = "Pasando parametros por argumento con CSV 2222")
         @CsvSource(value = {  "200,100,John,Andres", "250,200,Pepe,Pepe"
@@ -632,7 +630,7 @@ class CuentaTest {
             assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
         }
 
-
+        @Tag("param")
         @ParameterizedTest(name = "numero {index} ejecutando con valor {0} -> {argumentsWithNames}")
         @DisplayName(value = "Pasando parametros por argumento con CSV File N°2")
         @CsvFileSource(resources = "/data2.csv")
@@ -648,8 +646,55 @@ class CuentaTest {
 
     }
 
+    @Tag("param")
+    // Se llama a un metodo que tenga una lista con estos valores
+    @ParameterizedTest(name = "numero {index} ejecutando con valor {0} -> {argumentsWithNames}")
+    @DisplayName(value = "Pasando parametros por argumento con MethodSource")
+    @MethodSource("montoList")
+    void testDebitoCuentaMethodSource(String monto) {
+        cuenta.debito(new BigDecimal(monto));
+        assertNotNull(cuenta.getSaldo(), "¡La Cuenta no puede ser nula!");
+        assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
+    }
+
     static List<String> montoList() {
         return List.of("100", "200", "300", "500", "700", "1000");
     }
+
+    /**
+     * @Tag
+     * Asignar una etiqueta a los test para luego
+     * ejecutar test por etiquetas o de manera selectivda
+     *
+     * Ejecutar test que tengan cierta etiqueta asignada
+     *
+     * Ej=
+     * @Tag(SistemasOperativos)
+     * @Tag(VersionesDeJava)
+     * @Tag(PruebasParametrizadas)
+     *
+     * Se le puede asginar a las InnerClass y estas se encargan de
+     * asignar el @Tag a todos los test de esa InnerClass
+     *
+     * o a cada test por independiente si se quiere
+     *
+     * @Nota
+     * Puede tener mas de una etique
+     *
+     *
+     * @EjecucionTags
+     *
+     * En Intellij ->
+     *      Edit Configurations
+     * En CuentaTets -> Que es la clase de Test actual
+     *      [Section] = Build and Run
+     *          -> Por defecto sale en Class
+     *          pero toca Modificarlo a @Tags
+     *      con valor -> param
+     *      Este valor se refiere a que ejecutara los @Tags
+     *      con valor -> param
+     *
+     *
+     */
 
 }

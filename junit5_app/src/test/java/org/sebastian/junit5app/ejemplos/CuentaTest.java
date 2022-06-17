@@ -97,12 +97,25 @@ class CuentaTest {
         No es atributo de la clase que mantega el estado
         si no que es independiente para cada metodo
     */
-    Cuenta cuenta;
+    private Cuenta cuenta;
 
+    private TestInfo testInfo;
+    private TestReporter testReporter;
+
+    /*
+        Lo que se pasa por argumento como ya viene injectados, es solo
+        inicializar las variables globales.
+     */
     @BeforeEach
-    void initMetodoTest() {
+    void initMetodoTest(TestInfo testInfo, TestReporter testReporter) {
         this.cuenta = new Cuenta("Sebastian", new BigDecimal("1000.12345"));
+        this.testInfo = testInfo;
+        this.testReporter = testReporter;
         System.out.println("Iniciando el metodo.");
+        System.out.println("Iniciando el metodo.");
+        this.testReporter.publishEntry("ejecutando: [NombreDisplay]=" + testInfo.getDisplayName()
+                + ", [NombreTest]=" + testInfo.getTestMethod().get().getName()
+                + ", [NombreTags] " + testInfo.getTags());
     }
 
     @AfterEach
@@ -129,7 +142,10 @@ class CuentaTest {
         @DisplayName("El nombre")
         void testNombreCuenta() {
 
-            //cuenta.setPersona("Sebastian");
+            System.out.println(testInfo.getTags());
+            if(testInfo.getTags().contains("cuenta")){
+                System.out.println("Hacer algo con la equiteta cuenta");
+            }
 
             String valorEsperado = "Sebastian";
             String valorActual = cuenta.getPersona();

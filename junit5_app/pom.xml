@@ -7,6 +7,35 @@
     <groupId>org.sebastian.junitapp.ejemplo</groupId>
     <artifactId>junit5_app</artifactId>
     <version>1.0-SNAPSHOT</version>
+
+    <!--
+    TODO -> PARA EJECUTAR LOS TEST
+    Intellij [
+        Se dirijen a la seccion derecha lateral en Maven
+        Luego dan clicn Lyfecycle
+        Luego click derecho en Test
+        Run 'junit5_app [test]'
+    ]
+    -->
+
+    <!-- Se agrega ese Plugin para usar
+            MAVEN SUREFIRE PLUGIN
+    Para ejecutar los test desde Intellij mas facil
+    -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
+                <!-- Tambien con configuration -> groups podemos indicar que @Tags ejecutar-->
+                <configuration>
+                    <groups>cuenta</groups>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
     <dependencies>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

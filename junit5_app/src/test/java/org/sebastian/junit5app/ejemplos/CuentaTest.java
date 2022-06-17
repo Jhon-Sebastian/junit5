@@ -3,12 +3,16 @@ package org.sebastian.junit5app.ejemplos;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.*;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvFileSource;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.sebastian.junit5app.ejemplos.exceptions.DineroInsuficienteException;
 import org.sebastian.junit5app.ejemplos.models.Banco;
 import org.sebastian.junit5app.ejemplos.models.Cuenta;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -544,7 +548,9 @@ class CuentaTest {
         assertEquals("900.12345", cuenta.getSaldo().toPlainString(), () -> "Esperado debe ser igual al actual");
     }
 
-    /*
+    class PruebasParametrizadasTest{
+
+        /*
 
         @ParameterizedTest ->
         Repite el test pero con una lijera diferencia
@@ -569,14 +575,81 @@ class CuentaTest {
 
      */
 
-    @ParameterizedTest(name = "numero {index} ejecutando con valor {0} -> {argumentsWithNames}")
-    @DisplayName(value = "Pasando parametros por argumento")
-    @ValueSource(strings = {"100", "200", "300", "500", "700", "1000"})
-    void testDebitoCuenta(String monto) {
-        cuenta.debito(new BigDecimal(monto));
-        assertNotNull(cuenta.getSaldo(), "¡La Cuenta no puede ser nula!");
-        assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
+        @ParameterizedTest(name = "numero {index} ejecutando con valor {0} -> {argumentsWithNames}")
+        @DisplayName(value = "Pasando parametros por argumento")
+        @ValueSource(strings = {"100", "200", "300", "500", "700", "1000"})
+        void testDebitoCuentaValueSource(String monto) {
+            cuenta.debito(new BigDecimal(monto));
+            assertNotNull(cuenta.getSaldo(), "¡La Cuenta no puede ser nula!");
+            assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
+        }
+
+
+        @ParameterizedTest(name = "numero {index} ejecutando con valor {0} -> {argumentsWithNames}")
+        @DisplayName(value = "Pasando parametros por argumento con CSV")
+        @CsvSource(value = {"1,100", "2,200", "3,300", "4,500", "5,700", "6,1000"})
+        void testDebitoCuentaCsvSource(String index, String monto) {
+            System.out.println(index + " -> " + monto);
+            cuenta.debito(new BigDecimal(monto));
+            assertNotNull(cuenta.getSaldo(), "¡La Cuenta no puede ser nula!");
+            assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
+        }
+
+
+        @ParameterizedTest(name = "numero {index} ejecutando con valor {0} -> {argumentsWithNames}")
+        @DisplayName(value = "Pasando parametros por argumento con CSV File")
+        @CsvFileSource(resources = "/data.csv")
+        void testDebitoCuentaCsvFileSource(String monto) {
+            cuenta.debito(new BigDecimal(monto));
+            assertNotNull(cuenta.getSaldo(), "¡La Cuenta no puede ser nula!");
+            assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
+        }
+
+
+        // Se llama a un metodo que tenga una lista con estos valores
+        @ParameterizedTest(name = "numero {index} ejecutando con valor {0} -> {argumentsWithNames}")
+        @DisplayName(value = "Pasando parametros por argumento con MethodSource")
+        @MethodSource(value = {"montoList"})
+        void testDebitoCuentaMethodSource(String monto) {
+            cuenta.debito(new BigDecimal(monto));
+            assertNotNull(cuenta.getSaldo(), "¡La Cuenta no puede ser nula!");
+            assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
+        }
+
+
+        @ParameterizedTest(name = "numero {index} ejecutando con valor {0} -> {argumentsWithNames}")
+        @DisplayName(value = "Pasando parametros por argumento con CSV 2222")
+        @CsvSource(value = {  "200,100,John,Andres", "250,200,Pepe,Pepe"
+                , "300,300,Maria,maria", "510,500,pepa,pepa", "750,700,lulu,lulu"
+                , "1000.12345,1000.12345, sofia, sofIa"})
+        void testDebitoCuentaCsvSource2(String saldo, String monto, String esperado, String actual) {
+            cuenta.setSaldo(new BigDecimal(saldo));
+            cuenta.debito(new BigDecimal(monto));
+            cuenta.setPersona(actual);
+            assertNotNull(cuenta.getSaldo(), "¡La Cuenta no puede ser nula!");
+            assertNotNull(cuenta.getPersona());
+            assertEquals(esperado, cuenta.getPersona());
+            assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
+        }
+
+
+        @ParameterizedTest(name = "numero {index} ejecutando con valor {0} -> {argumentsWithNames}")
+        @DisplayName(value = "Pasando parametros por argumento con CSV File N°2")
+        @CsvFileSource(resources = "/data2.csv")
+        void testDebitoCuentaCsvFileSource2(String saldo, String monto, String esperado, String actual) {
+            cuenta.setSaldo(new BigDecimal(saldo));
+            cuenta.debito(new BigDecimal(monto));
+            cuenta.setPersona(actual);
+            assertNotNull(cuenta.getSaldo(), "¡La Cuenta no puede ser nula!");
+            assertNotNull(cuenta.getPersona());
+            assertEquals(esperado, cuenta.getPersona());
+            assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
+        }
+
     }
 
+    static List<String> montoList() {
+        return List.of("100", "200", "300", "500", "700", "1000");
+    }
 
 }
